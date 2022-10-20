@@ -24,6 +24,15 @@ export default function Register(){
         draggable:true,
         theme:"dark",
     }
+
+    //if user already login then redirect to chat page
+    useEffect(()=>{
+        if(localStorage.getItem("chat-app-user")){
+          navigate("/");
+        }
+     },[]);
+
+     //handle validations when call handleSubmit
     const handleSubmit = async (event) => {
         event.preventDefault();
         

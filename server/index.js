@@ -12,7 +12,6 @@ app.use(express.json());
 //use userRoutes for api calling
 app.use("/api/auth",userRoutes);
 
-console.log(userRoutes);
 
 mongoose.connect(process.env.MONGO_URL,{
     useNewUrlParser:true,
