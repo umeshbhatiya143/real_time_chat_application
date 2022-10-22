@@ -1,14 +1,72 @@
-import React from "react";
+import axios from "axios";
+import React, { useEffect, useState, useRef } from "react";
 import styled from "styled-components";
+import { sendMessageRoute, getAllMessagesRoute } from "../utils/APIRoutes";
 import ChatInput from "./ChatInput";
 import Logout from "./Logout";
+import { v4 as uuidv4 } from "uuid";
 import Messages from "./Messages";
 
 
-export default function ChatContainer({ currentChat }) {
-   const handleSendMsg = async (msg) =>{
+export default function ChatContainer({ currentChat, currentUser, socket }) {
+   const [messages, setMessages] = useState([]);
+   const [arrivalMessage, setArrivalMessage] = useState(null);
+   const scrollRef = useRef();
 
+   useEffect(() => {
+    if(currentChat){
+
+        ( async () =>{
+            const response = await axios.post(getAllMessagesRoute, {
+                from: currentUser._id,
+                to: currentChat._id,
+            });
+            setMessages(response.data);
+        })();
+    }
+   },[currentChat]);
+
+   const handleSendMsg = async (msg) =>{
+         await axios.post(sendMessageRoute, {
+            from: currentUser._id,
+            to: currentChat._id,
+            message: msg,
+         });
+
+         //when send message emit it
+         socket.current.emit("send-msg", {
+            to: currentChat._id,
+            from:currentUser._id,
+            message: msg, 
+         });
+
+         const msgs = [...messages];
+         msgs.push({fromSelf: true, message: msg});
+         setMessages(msgs);
+         
    };
+
+   //when user came online
+   useEffect(()=>{
+      if(socket.current){
+        socket.current.on("msg-receive", (msg)=>{
+            setArrivalMessage({
+                fromSelf: false, 
+                message: msg
+            });
+            // console.log(msg);
+        });
+      }
+   },[])
+  
+   useEffect(() =>{
+    arrivalMessage && setMessages((prev)=> 
+       [...prev, arrivalMessage]);
+   }, [arrivalMessage]);
+
+   useEffect(() =>{
+    scrollRef.current?.scrollIntoView({ behavior: "smooth" });
+   }, [messages]);
     return (
         <>
             {
@@ -28,7 +86,25 @@ export default function ChatContainer({ currentChat }) {
                             </div>
                             <Logout />
                         </div>
-                        <Messages />
+                        
+                        <div className="chat-messages">
+                            {
+                                messages.map((message) =>{
+                                    return (
+                                        <div ref={scrollRef} key={uuidv4()}>
+                                            <div className={`message ${message.fromSelf ? "sended" : "received"}`}>
+                                                <div className="content">
+                                                    <p>
+                                                        {message.message}
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    )
+                                })
+                            }
+                        </div>
+                        {/* <Messages /> */}
                         <ChatInput handleSendMsg = {handleSendMsg} />
                     </Container>
                 )
@@ -38,10 +114,18 @@ export default function ChatContainer({ currentChat }) {
 }
 
 const Container = styled.div`
-   padding-top: 1rem;
+   padding-top: 2.2rem;
+   display: grid;
+   grid-template-rows: 10% 78% 12%;
+   gap: 0.1rem;
+   overflow: hidden;
+   @media screen and (min-width:720px) and (max-width:1080px){
+    grid-auto-rows: 15% 70% 15%;
+}
    .chat-header {
     display: flex;
     justify-content: space-between;
+    background-color: #363A39 ;
     align-items: center;
     padding: 0 2rem;
     .user-details{
@@ -57,6 +141,53 @@ const Container = styled.div`
             h3{
                 color: white;
             }
+        }
+    }
+   }
+   .chat-messages {
+    padding: 1rem 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    overflow: auto;
+    &::-webkit-scrollbar {
+        width: 0.2rem;
+        &-thumb{
+            background-color: #ffffff39;
+            width: 0.1rem;
+            border-radius: 1rem;
+        }
+    }
+    .message{
+        display: flex;
+        align-items: center;
+        .content{
+            max-width: 50%;
+            overflow-wrap: break-word;
+            padding: 1rem;
+            font-size: 1.1rem;
+            border-radius: 0.5rem;
+            color: #d1d1d1;
+        }
+    }
+    .sended{
+        justify-content: flex-end;
+        .content{
+           // border: 1px solid;
+            padding: 15px;
+            box-shadow: 5px 5px 5px #888888;
+            background-color: #229954 ;
+            color:#232226;
+        }
+    }
+    .received{
+        justify-content: flex-start;
+        .content{
+           // border: 1px solid;
+            padding: 15px;
+            box-shadow: 5px 5px 5px #888888;
+            background-color: #566573;
+            color:white;
         }
     }
    }

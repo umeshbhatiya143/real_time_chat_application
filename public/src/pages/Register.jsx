@@ -1,7 +1,7 @@
 import React,{useState,useEffect} from "react";
 import { useNavigate, Link } from "react-router-dom";
 import styled from "styled-components";
-import Logo from "../assets/logo.svg"
+import Logo from "../assets/YuChat.png"
 import {ToastContainer,toast} from "react-toastify";
 import axios from 'axios';
 import "react-toastify/dist/ReactToastify.css"
@@ -85,7 +85,7 @@ export default function Register(){
                <form action="" onSubmit={(event)=> handleSubmit(event)}>
                  <div className="brand">
                     <img src={Logo} alt="Logo" />
-                    <h1>FunChat</h1>
+                    <h1>YuChat</h1>
                  </div>
                  <input 
                  type="text" 
@@ -130,7 +130,7 @@ const FormCotainer = styled.div`
    justify-content:center;
    gap:1rem;
    align-items:center;
-   background-color:#131324;
+   background-color:#003333;
    .brand{
     display:flex;
     align-items:center;
@@ -140,8 +140,8 @@ const FormCotainer = styled.div`
     height:5rem;
    }
    h1{
-    color:white;
-    text-transform:uppercase;
+    color:#FF6633;
+   
    }
 }
 form{

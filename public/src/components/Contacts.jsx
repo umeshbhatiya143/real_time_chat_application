@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import styled from "styled-components";
-import Logo from "../assets/logo.svg";
+import Logo from "../assets/YuChat.png";
 
 export default function Contacts({contacts, changeChat}) {
   const [currentUserName, setCurrentUserName] = useState(undefined);
@@ -29,7 +29,7 @@ export default function Contacts({contacts, changeChat}) {
         <Container>
           <div className="brand">
             <img src={Logo} alt="logo" />
-            <h3>FunChat</h3>
+            <h2>YuChat</h2>
           </div>
           <div className="contacts">
           {contacts.map((contact, index) => {
@@ -75,18 +75,18 @@ const Container = styled.div`
 display: grid;
 grid-template-rows: 10% 75% 15%;
 overflow: hidden;
-background-color: #080420;
+background-color:#3182C5 ;
+box-shadow: 5px 5px 5px #888888;
 .brand {
   display: flex;
   align-items: center;
   gap: 1rem;
   justify-content: center;
   img {
-    height: 2rem;
+    height: 3rem;
   }
-  h3 {
-    color: white;
-    text-transform: uppercase;
+  h2 {
+    color:#FF6633;
   }
 }
 .contacts {
@@ -130,10 +130,11 @@ background-color: #080420;
   }
 }
 .current-user {
-  background-color: #0d0d30;
+  background-color: #0f60a3 ;
   display: flex;
   justify-content: center;
   align-items: center;
+  border-radius:0.3rem;
   gap: 2rem;
   .avatar {
     img {

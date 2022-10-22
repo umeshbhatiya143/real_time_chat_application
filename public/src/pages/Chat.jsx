@@ -1,15 +1,17 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import styled from "styled-components";
 import axios from "axios"; // for api calling
 import { useNavigate } from "react-router-dom";
-import { allUsersRoute } from "../utils/APIRoutes";
+import { allUsersRoute, host } from "../utils/APIRoutes";
 import Contacts from "../components/Contacts"
 import Welcome from "../components/Welcome";
 import ChatContainer from "../components/ChatContainer";
+import { io } from "socket.io-client";
+import chatBack from "../assets/chatBack3.jpg"
 
 function Chat() {
     const navigate = useNavigate();
-
+    const socket = useRef();
     const [contacts, setContacts] = useState([]);
     const [currentUser, setCurrentUser] = useState(undefined);
     const [currentChat, setCurrentChat] = useState(undefined);
@@ -28,18 +30,25 @@ function Chat() {
             }
         })();
     }, []);
+    
+    //when current user is change we add it to map that is defined in backend
+    useEffect(()=>{
+        if(currentUser){
+            socket.current = io(host);
+            socket.current.emit("add-user", currentUser._id);
+        }
+    })
 
     useEffect(() => {
         (async () => {
             //if it is current user then
             if (currentUser) {
-                if (currentUser.isAvatarImageSet) {
+                if (currentUser.isAvatarImageset) {
                     const data = await axios.get(`${allUsersRoute}/${currentUser._id}`);
 
                     // console.log(data);
                     setContacts(data.data);
                 } else {
-                    alert("avatar");
                     navigate("/setAvatar");
                 }
             }
@@ -64,7 +73,11 @@ function Chat() {
                    isLoaded && currentChat === undefined ? (
                            <Welcome currentUser={currentUser} />
                     ) : (
-                        <ChatContainer currentChat={currentChat} />
+                        <ChatContainer 
+                        currentChat={currentChat} 
+                        currentUser={currentUser}
+                        socket = {socket}
+                        />
                     )
                 }
                 
@@ -83,11 +96,13 @@ flex-direction: column;
 justify-content: center;
 gap : 1rem;
 align-items: center;
-background-color: #131324;
+
+background-image: url(${chatBack});
+opacity:1rem;
 .container {
-    height: 85vh;
-    width: 85vw;
-    background-color: #00000076;
+    height: 100vh;
+    width: 100vw;
+    border-radius: 1rem;
     display: grid;
     grid-template-columns: 25% 75%;
     @media screen and (min-width:720px) and (max-width:1080px){
