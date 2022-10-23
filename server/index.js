@@ -18,7 +18,7 @@ app.use("/api/auth",userRoutes);
 //for message routing
 app.use("/api/messages",messageRoute);
 
-mongoose.connect(process.env.MONGO_URL,{
+mongoose.connect("mongodb+srv://admin-umesh:test123@cluster0.7lqoe.mongodb.net/chat",{
     useNewUrlParser:true,
     useUnifiedTopology: true,
 })
@@ -29,7 +29,7 @@ mongoose.connect(process.env.MONGO_URL,{
     console.log(err.message);
 });
 
-const server = app.listen(process.env.PORT, ()=>{
+const server = app.listen(process.env.PORT || 5000, ()=>{
     console.log(`Server Started on Port ${process.env.PORT}`);
 });
 
@@ -37,7 +37,7 @@ const server = app.listen(process.env.PORT, ()=>{
 //setup socket server
 const io = socket(server, {
     cors: {
-        origin: "https://yu-chat.herokuapp.com/",
+        origin: "http://localhost:3000" || "https://yu-chat.herokuapp.com/",
         Credentials: true,
     },
 });
