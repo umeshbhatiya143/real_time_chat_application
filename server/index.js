@@ -38,8 +38,15 @@ if(process.env.NODE_ENV === "production"){
     app.use(express.static({path: path.resolve(__dirname, './.env')}));
     app.get('/',(req, res) => {
        req.sendFile(path.resolve(__dirname, 'build', 'index.html'));
+       res.write("server is started");
+       res.end();
     });
 }
+
+app.get('/',(req, res) => {
+    res.write("server is started");
+    res.end();
+ });
 
 //setup socket server
 const io = socket(server, {
