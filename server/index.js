@@ -6,8 +6,9 @@ const messageRoute = require("./routes/messagesRoute");
 const app = express();
 const path = require('path');
 const socket = require("socket.io");
-require('dotenv').config({ path: path.resolve(__dirname, './.env') });
+//require('dotenv').config({ path: path.resolve(__dirname, './.env') });
 
+const Port = process.env.PORT || 5000;
 
 app.use(cors());
 app.use(express.json());
@@ -29,15 +30,21 @@ mongoose.connect("mongodb+srv://admin-umesh:test123@cluster0.7lqoe.mongodb.net/c
     console.log(err.message);
 });
 
-const server = app.listen(process.env.PORT || 5000, ()=>{
+const server = app.listen(Port, ()=>{
     console.log(`Server Started on Port ${process.env.PORT}`);
 });
 
+if(process.env.NODE_ENV === "production"){
+    app.use(express.static({path: path.resolve(__dirname, './.env')}));
+    app.get('/',(req, res) => {
+       req.sendFile(path.resolve(__dirname, 'build', 'index.html'));
+    });
+}
 
 //setup socket server
 const io = socket(server, {
     cors: {
-        origin: "http://localhost:3000" || "https://yu-chat.herokuapp.com/",
+        origin: "http://localhost:3000",
         Credentials: true,
     },
 });
@@ -60,3 +67,4 @@ io.on("connection", (socket) => {
         // console.log(data.message);
     });
 });
+
