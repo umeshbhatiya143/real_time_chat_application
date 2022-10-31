@@ -5,10 +5,12 @@ const userRoutes = require("./routes/userRoutes");
 const messageRoute = require("./routes/messagesRoute");
 const app = express();
 const path = require('path');
-const socket = require("socket.io");
-//require('dotenv').config({ path: path.resolve(__dirname, './.env') });
+const { createServer } = require("http");
+const { Server } = require("socket.io");
+require('dotenv').config({ path: path.resolve(__dirname, './.env') });
 
 const Port = process.env.PORT || 5000;
+const httpServer = createServer(app);
 
 app.use(cors());
 app.use(express.json());
@@ -30,31 +32,23 @@ mongoose.connect("mongodb+srv://admin-umesh:test123@cluster0.7lqoe.mongodb.net/c
     console.log(err.message);
 });
 
-const server = app.listen(Port, ()=>{
-    console.log(`Server Started on Port ${process.env.PORT}`);
-});
+
 
 if(process.env.NODE_ENV === "production"){
-    app.use(express.static({path: path.resolve(__dirname, './.env')}));
-    app.get('/',(req, res) => {
-       req.sendFile(path.resolve(__dirname, 'build', 'index.html'));
-       res.write("server is started");
-       res.end();
-    });
+    app.use(express.static("client/build"));
+   
 }
 
-app.get('/',(req, res) => {
-    res.write("server is started");
-    res.end();
- });
 
 //setup socket server
-const io = socket(server, {
+const io = new Server(httpServer, {
     cors: {
-        origin: "http://localhost:3000",
+        origin: "https://yu-chat.herokuapp.com/",
         Credentials: true,
     },
 });
+
+
 
 global.onlineUsers = new Map();
 
@@ -73,5 +67,11 @@ io.on("connection", (socket) => {
         }
         // console.log(data.message);
     });
+});
+
+
+
+httpServer.listen(Port, ()=>{
+    console.log("Server Started on Port 5000");
 });
 

@@ -1,0 +1,17 @@
+{
+  "files": {
+    "main.css": "/static/css/main.d20985f0.css",
+    "main.js": "/static/js/main.c9a85620.js",
+    "static/media/robot.gif": "/static/media/robot.0617a41936621e9697cd.gif",
+    "static/media/chatBack3.jpg": "/static/media/chatBack3.8e6b45d6a02fc4a7dfaa.jpg",
+    "static/media/loader.gif": "/static/media/loader.8f1b4eb54a7f3711c447.gif",
+    "static/media/YuChat.png": "/static/media/YuChat.7907ba5df22388937e55.png",
+    "index.html": "/index.html",
+    "main.d20985f0.css.map": "/static/css/main.d20985f0.css.map",
+    "main.c9a85620.js.map": "/static/js/main.c9a85620.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.d20985f0.css",
+    "static/js/main.c9a85620.js"
+  ]
+}
